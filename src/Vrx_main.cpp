@@ -42,7 +42,8 @@
 
 /////////// DEFINES ///////////
 
-#define BINDING_TIMEOUT     30000
+#define BINDING_TIMEOUT     300000 // 300 seconds
+#define BINDING_BOOT_COUNT  100 // Reboot into binding mode after 100 sub-30-second boots
 #define NO_BINDING_TIMEOUT  120000
 #define BINDING_LED_PAUSE   1000
 
@@ -282,7 +283,7 @@ void SetSoftMACAddress()
   {
     memcpy(firmwareOptions.uid, config.GetGroupAddress(), 6);
   }
-  DBG("EEPROM MAC = ");
+  DBG("EEPROM MAC = ");  
   for (int i = 0; i < 6; i++)
   {
     DBG("%x", firmwareOptions.uid[i]); // Debug prints
@@ -294,7 +295,7 @@ void SetSoftMACAddress()
   firmwareOptions.uid[0] = firmwareOptions.uid[0] & ~0x01;
 
   WiFi.mode(WIFI_STA);
-  #if defined(PLATFORM_ESP8266)
+    #if defined(PLATFORM_ESP8266)
     WiFi.setOutputPower(20.5);
   #elif defined(PLATFORM_ESP32)
     WiFi.setTxPower(WIFI_POWER_19_5dBm);
@@ -353,7 +354,7 @@ void checkIfInBindingMode()
   uint8_t bootCounter = config.GetBootCount();
   bootCounter++;
 
-  if (bootCounter > 2)
+  if (bootCounter > 20)
   {
     resetBootCounter();
 
